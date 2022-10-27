@@ -5,14 +5,15 @@ from models import *  # set ONNX_EXPORT in models.py
 from utils.datasets import *
 from utils.utils import *
 
-
 def detect(save_img=False):
+    output_signal = 0
     img_size = (320, 192) if ONNX_EXPORT else opt.img_size  # (320, 192) or (416, 256) or (608, 352) for (height, width)
     out, source, weights, half, view_img, save_txt = opt.output, opt.source, opt.weights, opt.half, opt.view_img, opt.save_txt
     webcam = source == '0' or source.startswith('rtsp') or source.startswith('http') or source.endswith('.txt')
 
     # Initialize
     device = torch_utils.select_device(device='cpu' if ONNX_EXPORT else opt.device)
+    
     if os.path.exists(out):
         shutil.rmtree(out)  # delete output folder
     os.makedirs(out)  # make new output folder
@@ -160,17 +161,20 @@ def detect(save_img=False):
 
     if save_txt or save_img:
         print('Results saved to %s' % os.getcwd() + os.sep + out)
+        output_signal = 1
         if platform == 'darwin':  # MacOS
             os.system('open ' + save_path)
 
     print('Done. (%.3fs)' % (time.time() - t0))
-
+    # send the signal 
+    return output_signal
+    
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--cfg', type=str, default='cfg/yolov3-spp.cfg', help='*.cfg path')
-    parser.add_argument('--names', type=str, default='/home/allen/Desktop/yolo/YOLO_V3_TRAIN/yolov3/data/humanface.names', help='*.names path')
-    parser.add_argument('--weights', type=str, default='/home/allen/Desktop/yolo/YOLO_V3_TRAIN/yolov3/weights/best.pt', help='weights path')
+    parser.add_argument('--names', type=str, default='C:\\Users\\Cui Xinyu\\OneDrive - National University of Singapore\Desktop\cs3237\project\head_body_detection_yolov3\data\\humanface.names', help='*.names path')
+    parser.add_argument('--weights', type=str, default='C:\\Users\\Cui Xinyu\\OneDrive - National University of Singapore\Desktop\cs3237\project\head_body_detection_yolov3\weights\\best.pt', help='weights path')
     parser.add_argument('--source', type=str, default='/home/allen/Downloads/track2.2_test_sample', help='source')  # input file/folder, 0 for webcam
     parser.add_argument('--output', type=str, default='output', help='output folder')  # output folder
     parser.add_argument('--img-size', type=int, default=512, help='inference size (pixels)')
@@ -189,3 +193,4 @@ if __name__ == '__main__':
 
     with torch.no_grad():
         detect()
+        
