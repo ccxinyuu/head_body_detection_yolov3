@@ -113,6 +113,7 @@ def detect(save_img=False):
             save_path = str(Path(out) / Path(p).name)
             s += '%gx%g ' % img.shape[2:]  # print string
             if det is not None and len(det):
+                output_signal = 1
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
 
@@ -160,8 +161,7 @@ def detect(save_img=False):
                     vid_writer.write(im0)
 
     if save_txt or save_img:
-        print('Results saved to %s' % os.getcwd() + os.sep + out)
-        output_signal = 1
+        # print('Results saved to %s' % os.getcwd() + os.sep + out)
         if platform == 'darwin':  # MacOS
             os.system('open ' + save_path)
 
@@ -189,8 +189,11 @@ if __name__ == '__main__':
     parser.add_argument('--agnostic-nms', action='store_true', help='class-agnostic NMS')
     parser.add_argument('--augment', action='store_true', help='augmented inference')
     opt = parser.parse_args()
-    print(opt)
 
     with torch.no_grad():
-        detect()
+        out = detect()
+        print(out)
+        with open('detection_result.txt', 'w') as f:
+            f.write(str(out))    
+
         
