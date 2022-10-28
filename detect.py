@@ -192,7 +192,7 @@ if __name__ == '__main__':
 
     with torch.no_grad():
         out = detect()
-        print(out)
+        print("detetction signal", out)
         with open('detection_result.txt', 'w') as f:
             f.write(str(out))    
 
